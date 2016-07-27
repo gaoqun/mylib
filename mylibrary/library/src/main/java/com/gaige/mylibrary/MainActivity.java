@@ -4,10 +4,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gq.mylib.base.BaseActivity;
 
@@ -42,16 +40,12 @@ public class MainActivity extends BaseActivity<MainMvpView, MainPresenter> imple
             }
         });
 
-//        showProgressDialog("title","message");
-//        showProgressDialog("title","message",true);
-//        showProgressDialog("title","message",true,true);
-        showProgressDialog("title", "message", true, true, new DialogInterface.OnCancelListener() {
+        showProgressDialog(null, new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                showSnackBar(mHello, "cancel", null, null);
+                if (presenter != null) presenter.cancelRequest();
             }
         });
-
     }
 
     @Override
@@ -67,12 +61,9 @@ public class MainActivity extends BaseActivity<MainMvpView, MainPresenter> imple
 
     @Override
     public void refresh(String msg) {
+        showShortToast("refresh new data!");
         mHello.setText(msg);
-    }
-
-    @Override
-    public void notify(String msg) {
-        Toast.makeText(App.sContext, !TextUtils.isEmpty(msg) ? msg : "", Toast.LENGTH_SHORT).show();
+        cancleProgressDialog();
     }
 
     @Override

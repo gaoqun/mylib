@@ -7,6 +7,4 @@ import com.gq.mylib.vp.Contract;
  */
 public interface MainMvpView extends Contract.MvpView {
     void refresh(String msg);
-
-    void notify(String msg);
 }

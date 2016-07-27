@@ -22,11 +22,13 @@ import com.gq.mylib.vp.Contract;
 public abstract class BaseActivity<V extends Contract.MvpView, T extends BasePresenter<V>> extends AppCompatActivity {
     public T presenter;
     public static Handler sHandler = new Handler(Looper.getMainLooper());
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = initPresenter();
+        mProgressDialog = new ProgressDialog(this);
     }
 
     @Override
@@ -44,6 +46,7 @@ public abstract class BaseActivity<V extends Contract.MvpView, T extends BasePre
 
     /**
      * 保存临时数据
+     *
      * @param outState
      */
     @Override
@@ -135,29 +138,27 @@ public abstract class BaseActivity<V extends Contract.MvpView, T extends BasePre
         builder.show();
     }
 
-    /**
-     * show progressdialog
-     *
-     * @param title
-     * @param message
-     * @param indeterminate
-     * @param cancelable
-     * @param cancelListener
-     */
-    public void showProgressDialog(String title, String message, boolean indeterminate, boolean cancelable, DialogInterface.OnCancelListener cancelListener) {
-        ProgressDialog.show(this, "", message, indeterminate, cancelable, cancelListener);
+    public void cancleProgressDialog() {
+        if (mProgressDialog.isShowing()) {
+            mProgressDialog.cancel();
+        }
     }
 
-    public void showProgressDialog(String title, String message, boolean indeterminate, boolean cancelable) {
-        ProgressDialog.show(this, "", message, indeterminate, cancelable);
+    public void showProgressDialog(String msg, DialogInterface.OnCancelListener onCancelListener) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCancelable(true);
+            if (onCancelListener != null)
+                mProgressDialog.setOnCancelListener(onCancelListener);
+            mProgressDialog.setIndeterminate(true);
+            if (TextUtils.isEmpty(msg))
+                ProgressDialog.show(this, "", "正在加载...");
+            else
+                ProgressDialog.show(this, "", msg);
+        }
+        if (!mProgressDialog.isShowing())
+            mProgressDialog.show();
     }
 
-    public void showProgressDialog(String title, String message, boolean indeterminate) {
-        ProgressDialog.show(this, "", message, indeterminate);
-    }
-
-    public void showProgressDialog(String title, String message) {
-        ProgressDialog.show(this, "", message);
-    }
 
 }

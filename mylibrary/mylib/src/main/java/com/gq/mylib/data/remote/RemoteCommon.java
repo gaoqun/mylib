@@ -8,6 +8,7 @@ import retrofit2.Response;
 
 /**
  * Created by gaoqun on 2016/5/13.
+ * 公共数据处理
  */
 public class RemoteCommon implements CallBack.ResponseResult {
 

@@ -5,9 +5,9 @@ import retrofit2.Response;
 /**
  * Created by gaoqun on 2016/7/19.
  */
-public interface CallBack {
+public interface CallBack<T> {
 
-    <T> void Success(T t);
+     void Success(T t);
 
     <T> void Failed(T t);
 
