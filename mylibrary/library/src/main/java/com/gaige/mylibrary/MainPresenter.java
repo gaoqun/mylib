@@ -1,5 +1,8 @@
 package com.gaige.mylibrary;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.gq.mylib.data.BaseRepository;
 import com.gq.mylib.data.CallBack;
 import com.gq.mylib.netWork.NetWork;
@@ -20,7 +23,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
     public void onResume() {
         mResponseDataCall = NetWork.createService(ServiceTest.class).fetchBanner();
         mBaseRepository = new BaseRepository();
-        mBaseRepository.fetchData(mResponseDataCall, new CallBack<ResponseData>() {
+        /*mBaseRepository.fetchData(mResponseDataCall, new CallBack<ResponseData>() {
             @Override
             public void Success(ResponseData responseData) {
                 if (getMvpView() != null) {
@@ -33,14 +36,24 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                 LogUtil.d("request failed!");
             }
-        });
-        /*mResponseDataCall = NetWork.createService(ServiceTest.class).fetchBanner();
-        mBaseRepository = new BaseRepository();
+        });*/
+
         mBaseRepository.fetchDataWithCache(mResponseDataCall, new CallBack<ResponseData>() {
             @Override
-            public void Success(ResponseData responseData) {
-                if (getMvpView() != null) {
-                    getMvpView().refresh(GsonUtil.GsonString(responseData));
+            public void Success(final ResponseData responseData) {
+                if (Thread.currentThread().getName().equals("main")) {
+                    if (getMvpView() != null) {
+                        getMvpView().refresh(GsonUtil.GsonString(responseData));
+                    }
+                } else {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (getMvpView() != null) {
+                                getMvpView().refresh(GsonUtil.GsonString(responseData));
+                            }
+                        }
+                    });
                 }
             }
 
@@ -49,7 +62,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                 LogUtil.d("request failed!");
             }
-        }, "banner", ResponseData.class);*/
+        }, "banner", ResponseData.class);
 
 
     }
@@ -74,4 +87,5 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
         if (mBaseRepository != null)
             mBaseRepository.removeAllMessages();
     }
+
 }

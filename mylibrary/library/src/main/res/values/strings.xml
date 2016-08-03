@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">mylibrary</string>
     <string name="action_settings">Settings</string>
+    <!--can change text-->
+    <string name="comeback">%s come back!</string>
+
+    <!--plurals-->
+    <plurals name="minutes">
+        <item quantity="one">minute</item>
+        <item quantity="many">minutes</item>
+    </plurals>
+
+
 </resources>
