@@ -1,11 +1,18 @@
 package com.gq.mylib.base;
 
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,17 +30,25 @@ public abstract class BaseActivity<V extends Contract.MvpView, T extends BasePre
     public T presenter;
     public static Handler sHandler = new Handler(Looper.getMainLooper());
     private ProgressDialog mProgressDialog;
+    public HandlerThread mHandlerThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = initPresenter();
         mProgressDialog = new ProgressDialog(this);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    public Handler getAsyncThread() {
+        mHandlerThread = new HandlerThread(this.getClass().getName() + "_asyncThread");
+        mHandlerThread.start();
+        return new Handler(mHandlerThread.getLooper());
     }
 
     /**
@@ -65,6 +80,13 @@ public abstract class BaseActivity<V extends Contract.MvpView, T extends BasePre
         super.onDestroy();
         presenter.detachView();
         sHandler.removeCallbacksAndMessages(null);
+        if (mHandlerThread.isAlive()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                mHandlerThread.quitSafely();
+            } else {
+                mHandlerThread.quit();
+            }
+        }
     }
 
     public abstract T initPresenter();
@@ -156,8 +178,28 @@ public abstract class BaseActivity<V extends Contract.MvpView, T extends BasePre
             else
                 ProgressDialog.show(this, "", msg);
         }
-        if (!mProgressDialog.isShowing())
+        if (mProgressDialog != null && !mProgressDialog.isShowing())
             mProgressDialog.show();
+    }
+
+    public void clearUserData() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            activityManager.clearApplicationUserData();
+        }
+    }
+
+    /**
+     * you can use this method to tint drawables to reduce the size of app
+     *
+     * @param drawable
+     * @param colors
+     * @return
+     */
+    public Drawable setDrawableTint(Drawable drawable, int colors) {
+        Drawable drawableTemp = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTintList(drawableTemp, ContextCompat.getColorStateList(this, colors));
+        return drawableTemp;
     }
 
 

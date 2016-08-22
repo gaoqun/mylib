@@ -1,0 +1,23 @@
+<resources>
+    <declare-styleable name="WeatherGlassView">
+        <!--<attr name="exampleString" format="string"/>
+        <attr name="exampleDimension" format="dimension"/>
+        <attr name="exampleColor" format="color"/>
+        <attr name="exampleDrawable" format="color|reference"/>-->
+        <attr name="weatherGlassWidth" format="float"/><!--温度计宽度-->
+        <attr name="weatherGlassHeight" format="float"/><!--温度计高度-->
+        <attr name="weatherGlassDeepColor" format="color"/><!--温度计最深颜色-->
+        <attr name="weatherGlassLightColor" format="color"/><!--温度计最浅颜色-->
+        <attr name="weatherGlassBackgroundColor" format="color"/><!--温度计原始背景色-->
+        <attr name="weatherGlassBorderColor" format="color"/><!--温度计边框颜色-->
+        <attr name="indicatesBackgroundColor" format="color"/><!--指示条背景色-->
+        <attr name="indicatesTextColor" format="color"/><!--指示条字体颜色-->
+        <attr name="indicatesTextSize" format="dimension"/><!--指示条字体大小-->
+        <attr name="indicatesText" format="integer"/><!--指示条的值-->
+        <attr name="speed" format="enum">
+            <enum name="fast" value="50"/>
+            <enum name="middle" value="500"/>
+            <enum name="slow" value="1000"/>
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,7 +1,8 @@
 package com.gq.mylib.data;
 
+import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
+import android.os.HandlerThread;
 
 import com.gq.mylib.data.local.LocalManager;
 import com.gq.mylib.data.remote.RemoteManager;
@@ -14,23 +15,29 @@ import retrofit2.Call;
  * 设置缓存方式 本地文件缓存
  */
 public class BaseRepository {
-
-    private boolean isCache;
-    private static Handler sHandler = new Handler(Looper.getMainLooper());
+    private HandlerThread mHandlerThread;
 
     public <T> void fetchDataWithCache(final Call<T> call, final CallBack callBack, final String key, final Class<T> tClass) {
+        mHandlerThread = new HandlerThread(this.getClass().getName() + "_asyncThread");
+        mHandlerThread.start();
         final RemoteManager remoteManager = RemoteManager.getInstance();
         final LocalManager localManager = LocalManager.getInstance();
         //缓存
-        sHandler.post(new Runnable() {
+        new Handler(mHandlerThread.getLooper()).post(new Runnable() {
             @Override
             public void run() {
-                T t = localManager.getCache(key, tClass);
-                if (t == null) {
-                    callBack.Failed("no data!");
-                } else {
-                    callBack.Success(t);
-                }
+                localManager.getCache(key, tClass, new CallBack() {
+                    @Override
+                    public void Success(Object o) {
+                        callBack.Success(o);
+                    }
+
+                    @Override
+                    public void Failed(Object o) {
+                        callBack.Failed("no data!");
+
+                    }
+                });
                 remoteManager.getRemoteDataWithCache(call, callBack, true, key);
             }
         });
@@ -42,8 +49,12 @@ public class BaseRepository {
         remoteManager.getRemoteData(call, callBack);
     }
 
-    public void removeAllMessages(){
-        sHandler.removeCallbacksAndMessages(null);
+    public void removeAllMessages() {
+        if (mHandlerThread!=null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                mHandlerThread.quitSafely();
+            } else mHandlerThread.quit();
+        }
     }
 
 }

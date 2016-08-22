@@ -15,4 +15,20 @@ public class App extends Application {
         super.onCreate();
         sContext = getApplicationContext();
     }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+    }
+
 }

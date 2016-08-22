@@ -84,8 +84,12 @@ public class MainActivity extends BaseActivity<MainMvpView, MainPresenter> imple
                 public void run() {
                     a();
                 }
-            });
+           });
         }
+
+//        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+
     }
 
 
